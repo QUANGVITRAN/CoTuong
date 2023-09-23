@@ -46,5 +46,14 @@ namespace Libs.Repositories
                 return room;
             throw new NotImplementedException();
         }
+        public void DeleteRoom(Room room)
+        {
+            _dbContext.Room.Remove(room);
+        }
+        public List<Room> SearchByName(string roomName)
+        {
+            return _dbContext.Room.Where(r => r.RoomName.Contains(roomName)).ToList();
+        }
+
     }
 }

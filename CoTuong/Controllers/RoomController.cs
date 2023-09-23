@@ -41,5 +41,20 @@ namespace CoTuong.Controllers
             Room room = roomService.getRoomById(roomId);
             return Ok(new { status = true, message = room });
         }
+        [HttpDelete]
+        [Route("deleteRoom")]
+        public IActionResult deleteRoom(Guid roomId)
+        {
+            roomService.DeleteRoom(roomId);
+            return Ok(new { status = true, message = "Xoa Room thanh cong" });
+        }
+
+        [HttpGet]
+        [Route("SearchByName")]
+        public IActionResult SearchByName(string roomName)
+        {
+            List<Room> roomList = roomService.SearchByName(roomName);
+            return Ok(new { status = true, message = roomList });
+        }
     }
 }

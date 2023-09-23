@@ -36,5 +36,20 @@ namespace Libs.Services
         {
             return roomRepository.GetById(roomId);
         }
+
+        public void DeleteRoom(Guid roomId)
+        {
+            var roomToDelete = getRoomById(roomId);
+            if (roomToDelete != null)
+            {
+                roomRepository.DeleteRoom(roomToDelete);
+                Save();
+            }
+        }
+
+        public List<Room> SearchByName(string roomName)
+        {
+            return roomRepository.SearchByName(roomName);
+        }
     }
 }
