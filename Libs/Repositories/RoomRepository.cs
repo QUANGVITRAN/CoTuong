@@ -17,7 +17,7 @@ namespace Libs.Repositories
 
     }
 
-    public class RoomRepository: RebositoryBase<Room>, IRoomRepository
+    public class RoomRepository: RepositoryBase<Room>, IRoomRepository
     {
         public RoomRepository(ApplicationDBContext dBContext): base(dBContext) { }
 

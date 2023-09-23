@@ -1,5 +1,6 @@
 ﻿using Libs.Entity;
 using Libs.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ namespace CoTuong.Controllers
         {
             this.roomService = roomService;
         }
+        [Authorize]
         [HttpPost]
         [Route("insertRoom")]
         public IActionResult insertRoom(string roomName)
