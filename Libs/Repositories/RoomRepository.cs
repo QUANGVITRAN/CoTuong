@@ -14,7 +14,7 @@ namespace Libs.Repositories
         public void InsertRoom(Room room)
         {
         }
-
+       
     }
 
     public class RoomRepository: RebositoryBase<Room>, IRoomRepository
@@ -31,7 +31,9 @@ namespace Libs.Repositories
         {
             return _dbContext.Room.ToList();
         }
-        
+
+       
+
 
         public IEnumerable<Room> GetAll(Expression<Func<Room, bool>> filter = null, Func<IQueryable<Room>, IOrderedQueryable<Room>> oderBy = null, int skip = 0, int take = 0)
         {

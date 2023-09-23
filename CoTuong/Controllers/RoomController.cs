@@ -33,13 +33,32 @@ namespace CoTuong.Controllers
             roomList = roomService.getAll();
             return Ok(new { status = true, message = roomList });
         }
+        [HttpGet]
+        [Route("getAllUserInRoom")]
+        public IActionResult getAllUserInRoom(Guid roomId)
+        {
+            List<UserInRoom> userinroomList = roomService.getUserInRoomList(roomId);
 
+            return Ok(new { status = true, message = userinroomList });
+        }
         [HttpGet]
         [Route("getRoomById")]
         public IActionResult getRoomById(Guid roomId)
         {
             Room room = roomService.getRoomById(roomId);
             return Ok(new { status = true, message = room });
+        }
+
+        [HttpPost]
+        [Route("addUserToRoom")]
+        public IActionResult addUserToRoom(Guid roomId, string userName)
+        {
+            UserInRoom user = new UserInRoom();
+            user.Id = Guid.NewGuid();
+            user.UserName = userName;
+            user.RoomId = roomId;
+            roomService.insertUserInRoom(user);
+            return Ok(new { status = true, message = "" });
         }
     }
 }

@@ -25,5 +25,7 @@ namespace CoTuong.Controllers
             userService.Login(user);
             return Ok(new { status = true, message = userName });
         }
+
+        
     }
 }

@@ -23,9 +23,10 @@ namespace Libs.Services
             userRepository.Add(user);
             Save();
         }
+
         public void Save()
         {
             userRepository.SaveChanges();
-        }
+        } 
     }
 }
