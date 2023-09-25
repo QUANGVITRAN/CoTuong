@@ -18,6 +18,7 @@ namespace CoTuong.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IConfiguration _configuration;
         private TokenService _tokenService;
+        private UserInRoomService _userInRoomService;
         private readonly TokenValidationParameters _tokenValidationParameters;
         public AuthController(UserManager<IdentityUser> userManager, IConfiguration configuration, TokenService tokenService,
             TokenValidationParameters tokenValidationParameters)
@@ -264,5 +265,21 @@ namespace CoTuong.Controllers
             var chars = "asdxzcxzcxzczxcxzcxzcxzcxvcxvbcxvcxvcx32432432_";
             return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
-}
+
+        [HttpGet]
+        [Route("getAllUser")]
+        public IActionResult getAllUser()
+        {
+            List<IdentityUser> users = _userManager.Users.ToList();
+            return Ok(new { status = true, message = users });
+        }
+
+        [HttpGet]
+        [Route("getUserById")]
+        public IActionResult getUserId(Guid userId)
+        {
+            IdentityUser users = _userManager.FindByIdAsync(userId.ToString()).Result;
+            return Ok(new { status = true, message = users });
+        }
+    }
 }

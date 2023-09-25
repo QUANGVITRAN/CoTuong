@@ -30,7 +30,7 @@ namespace Libs.Repositories
         {
             return _dbContext.UserInRoom.Where(s=>s.RoomId== roomid).ToList();
         }
-        
+
         public void Save()
         {
             _dbContext.SaveChanges();
