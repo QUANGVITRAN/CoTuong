@@ -54,6 +54,9 @@ namespace CoTuong.Controllers
             List<IdentityUser> userinroomList = cacheManage.userInRoom[roomId.ToString()];
             return Ok(new { status = true, message = userinroomList });
         }
+
+        
+
         [HttpGet]
         [Route("getRoomById")]
         public IActionResult getRoomById(Guid roomId)
@@ -78,6 +81,14 @@ namespace CoTuong.Controllers
                 userinroomList = cacheManage.userInRoom[roomId.ToString()];
                 userinroomList.Add(_userManager.FindByIdAsync(userId).Result);
             }
+            return Ok(new { status = true, message = "" });
+        }
+        
+        [HttpGet]
+        [Route("delUserInRoom")]
+        public IActionResult delUserInRoom (Guid roomId, string userId) 
+        {
+            userInRoomService.delUserInRoom(roomId, userId);
             return Ok(new { status = true, message = "" });
         }
     }

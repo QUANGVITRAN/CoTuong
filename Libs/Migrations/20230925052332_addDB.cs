@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Libs.Migrations
 {
-    public partial class addTokenRefresh : Migration
+    public partial class addDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -77,6 +77,20 @@ namespace Libs.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Room", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserInRoom",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserInRoom", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -247,6 +261,9 @@ namespace Libs.Migrations
 
             migrationBuilder.DropTable(
                 name: "Room");
+
+            migrationBuilder.DropTable(
+                name: "UserInRoom");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

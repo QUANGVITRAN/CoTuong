@@ -31,6 +31,11 @@ namespace Libs.Repositories
             return _dbContext.UserInRoom.Where(s=>s.RoomId== roomid).ToList();
         }
         
+        public void delUserInRoom(UserInRoom userInRoom) 
+        {
+            _dbContext.UserInRoom.Remove(userInRoom);
+        }
+        
         public void Save()
         {
             _dbContext.SaveChanges();
