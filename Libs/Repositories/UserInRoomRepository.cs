@@ -16,19 +16,11 @@ namespace Libs.Repositories
         public void insertUserInRoom(UserInRoom UserInRoom);
         public List<UserInRoom> getUserInRoomList(Guid roomId);
     }
-    public class UserInRoomRepository : RebositoryBase<UserInRoom>, IUserInRoomRepository
+
+    public class UserInRoomRepository : RepositoryBase<UserInRoom>, IUserInRoomRepository
     {
         public UserInRoomRepository(ApplicationDBContext dBContext) : base(dBContext) { }
 
-        public IEnumerable<UserInRoom> GetAll(Expression<Func<UserInRoom, bool>> filter = null, Func<IQueryable<UserInRoom>, IOrderedQueryable<UserInRoom>> oderBy = null, int skip = 0, int take = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public UserInRoom GetById(object id)
-        {
-            throw new NotImplementedException();
-        }
 
         public void insertUserInRoom(UserInRoom userInRoom)
         {
@@ -37,6 +29,11 @@ namespace Libs.Repositories
         public List<UserInRoom> getUserInRoomList(Guid roomid)
         {
             return _dbContext.UserInRoom.Where(s=>s.RoomId== roomid).ToList();
+        }
+        
+        public void Save()
+        {
+            _dbContext.SaveChanges();
         }
     }
 }

@@ -40,6 +40,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddSingleton(tokenValidationParameter);
 builder.Services.AddTransient<RoomService>();
 builder.Services.AddTransient<TokenService>();
+builder.Services.AddTransient<UserInRoomService>();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddControllersWithViews();
 

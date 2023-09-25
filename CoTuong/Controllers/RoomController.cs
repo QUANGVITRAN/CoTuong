@@ -2,7 +2,9 @@
 using Libs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CoTuong.Controllers
 {
@@ -11,11 +13,20 @@ namespace CoTuong.Controllers
     public class RoomController : ControllerBase
     {
         private RoomService roomService;
-        public RoomController (RoomService roomService)
+        private UserInRoomService userInRoomService;
+        private IMemoryCache memoryCache;
+        private CacheManege.CacheManage cacheManage;
+        private readonly UserManager<IdentityUser> _userManager;
+        public RoomController (RoomService roomService, UserInRoomService userInRoomService, 
+            IMemoryCache memoryCache, UserManager<IdentityUser> userManager)
         {
             this.roomService = roomService;
+            this.userInRoomService = userInRoomService;
+            this.memoryCache = memoryCache;
+            this.cacheManage = new CacheManege.CacheManage(memoryCache, userInRoomService, roomService);
+            this._userManager = userManager;
         }
-        [Authorize]
+       // [Authorize]
         [HttpPost]
         [Route("insertRoom")]
         public IActionResult insertRoom(string roomName)
@@ -39,8 +50,8 @@ namespace CoTuong.Controllers
         [Route("getAllUserInRoom")]
         public IActionResult getAllUserInRoom(Guid roomId)
         {
-            List<UserInRoom> userinroomList = roomService.getUserInRoomList(roomId);
-
+            //List<IdentityUser> userinroomList = userInRoomService.getUserInRoom(roomId);
+            List<IdentityUser> userinroomList = cacheManage.userInRoom[roomId.ToString()];
             return Ok(new { status = true, message = userinroomList });
         }
         [HttpGet]
@@ -53,13 +64,20 @@ namespace CoTuong.Controllers
 
         [HttpPost]
         [Route("addUserToRoom")]
-        public IActionResult addUserToRoom(Guid roomId, string userName)
+        public IActionResult addUserToRoom(Guid roomId, string userId)
         {
-            UserInRoom user = new UserInRoom();
-            user.Id = Guid.NewGuid();
-            user.UserName = userName;
-            user.RoomId = roomId;
-            roomService.insertUserInRoom(user);
+            userInRoomService.insertUserInRoom(roomId, userId);
+            List<IdentityUser> userinroomList = new List<IdentityUser>();
+            if (!cacheManage.userInRoom.ContainsKey(roomId.ToString().ToLower()))
+            {
+                userinroomList = userInRoomService.getUserInRoom(roomId);
+                cacheManage.userInRoom.Add(roomId.ToString(), userinroomList);
+            }
+            else
+            {
+                userinroomList = cacheManage.userInRoom[roomId.ToString()];
+                userinroomList.Add(_userManager.FindByIdAsync(userId).Result);
+            }
             return Ok(new { status = true, message = "" });
         }
     }

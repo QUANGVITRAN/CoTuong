@@ -7,6 +7,8 @@ namespace Libs
     {
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Room> Room { get; set; }
+        public DbSet<UserInRoom> UserInRoom { get; set; }
+
         public ApplicationDBContext (DbContextOptions<ApplicationDBContext> options) : base(options)
         {
 
