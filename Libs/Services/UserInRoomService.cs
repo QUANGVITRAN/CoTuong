@@ -35,7 +35,7 @@ namespace Libs.Services
 
         public void delUserInRoom( Guid roomId,  String userId) 
         {
-            var userInRoom = dbContext.UserInRoom.Where(x => x.UserId == userId).FirstOrDefault();
+            var userInRoom = dbContext.UserInRoom.Where(x => x.UserId.Equals(userId)|| x.RoomId.Equals(roomId)).FirstOrDefault();
             userInRoomRepository.delUserInRoom(userInRoom);
             userInRoomRepository.Save();
         }

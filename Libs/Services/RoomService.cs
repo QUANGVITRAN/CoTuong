@@ -34,6 +34,9 @@ namespace Libs.Services
             userInRoomRepository.insertUserInRoom(userInRoom);
             Save();
         }
+
+
+
        /* public void getUserInRoomList(Guid roomId)
         {
             userInRoomRepository.getUserInRoomList(roomId);

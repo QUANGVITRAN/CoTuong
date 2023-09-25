@@ -84,12 +84,12 @@ namespace CoTuong.Controllers
             return Ok(new { status = true, message = "" });
         }
         
-        [HttpGet]
+        [HttpDelete]
         [Route("delUserInRoom")]
         public IActionResult delUserInRoom (Guid roomId, string userId) 
         {
             userInRoomService.delUserInRoom(roomId, userId);
-            return Ok(new { status = true, message = "" });
+            return Ok(new { status = true, message = "Done" });
         }
     }
 }
