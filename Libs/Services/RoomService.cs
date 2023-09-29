@@ -1,5 +1,6 @@
 ﻿using Libs.Entity;
 using Libs.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +50,26 @@ namespace Libs.Services
         }
         public Room getRoomById(Guid roomId)
         {
+            
+            
             return roomRepository.GetById(roomId);
+
+            throw new Exception("RoomId not found in Room!");
+
+        }
+        public void DeleteRoom(Guid roomId)
+        {
+            var roomToDelete = getRoomById(roomId);
+            if (roomToDelete != null)
+            {
+                roomRepository.DeleteRoom(roomToDelete);
+                Save();
+            }
+        }
+
+        public List<Room> SearchByName(string roomName)
+        {
+            return roomRepository.SearchByName(roomName);
         }
     }
 }

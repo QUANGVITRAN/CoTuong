@@ -19,14 +19,17 @@ namespace CoTuong.Controllers
         private readonly IConfiguration _configuration;
         private TokenService _tokenService;
         private readonly TokenValidationParameters _tokenValidationParameters;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public AuthController(UserManager<IdentityUser> userManager, IConfiguration configuration, TokenService tokenService,
-            TokenValidationParameters tokenValidationParameters)
+            TokenValidationParameters tokenValidationParameters, IHttpContextAccessor httpContextAccessor)
         {
             this._userManager = userManager;
             this._configuration = configuration;
             this._tokenService = tokenService;
             this._tokenValidationParameters = tokenValidationParameters;
+            _httpContextAccessor = httpContextAccessor;
         }
+
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] UserDTO loginRequest)
@@ -72,6 +75,7 @@ namespace CoTuong.Controllers
                 Result = false
             });
         }
+
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] UserDTO registerRequest)
@@ -119,6 +123,7 @@ namespace CoTuong.Controllers
                 Result = false
             });
         }
+
         [HttpPost]
         [Route("refreshToken")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRequest tokenRequest)
@@ -148,6 +153,15 @@ namespace CoTuong.Controllers
                 Result = false
             });
         }
+        
+        private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+        {
+            var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTimeVal = dateTimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
+            return dateTimeVal;
+        }
+
+        [NonAction]
         public async Task<AuthResult> VerifyAndGenerateToken(TokenRequest tokenRequest)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
@@ -213,12 +227,7 @@ namespace CoTuong.Controllers
                 };
             }
         }
-        private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
-        {
-            var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dateTimeVal = dateTimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
-            return dateTimeVal;
-        }
+
         private async Task<AuthResult> GenerateJwtToken(IdentityUser user)
         {
             var jwtTokenHanlder = new JwtSecurityTokenHandler();
@@ -258,11 +267,12 @@ namespace CoTuong.Controllers
                 Result = true
             };
         }
+
         private string RandomStringGeneration(int length)
         {
             var random = new Random();
             var chars = "asdxzcxzcxzczxcxzcxzcxzcxvcxvbcxvcxvcx32432432_";
             return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
-}
+    }
 }
