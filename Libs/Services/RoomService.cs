@@ -25,6 +25,13 @@ namespace Libs.Services
         {
             dbContext.SaveChanges();
         }
+        public void update(Room room)
+        {
+            //var room = roomRepository.GetById(room.Id);
+            //room.Turn = turn;
+            dbContext.Update(room);
+            Save();
+        }
         public void insertRoom(Room room)
         {
             roomRepository.InsertRoom(room);

@@ -25,9 +25,24 @@ namespace Libs.Services
         public void insertUserInRoom(Guid roomId,String userId )
         {
             UserInRoom userInRoom = new UserInRoom();
-            userInRoom.Id =  Guid.NewGuid();
+            userInRoom.Id = Guid.NewGuid();
             userInRoom.UserId = userId;
             userInRoom.RoomId = roomId;
+
+            int sl = getUserInRoom(roomId).Count();
+            if(sl > 1)
+            {
+                userInRoom.Role = "NguoiXem";
+            }
+            else if (sl == 1)
+            {
+                userInRoom.Role = "DoiThu";
+            }
+            else
+            {
+                userInRoom.Role = "ChuPhong";
+            }
+
             userInRoomRepository.insertUserInRoom(userInRoom);
             userInRoomRepository.Save();
 
@@ -42,6 +57,32 @@ namespace Libs.Services
                 listUser.Add(identityUser);
             }
             return listUser;
+        }
+        public UserInRoom getUserInRoomById(Guid roomId, string userId)
+        {
+            var listUser = userInRoomRepository.getUserInRoomList(roomId);
+            var userInRooms = listUser.Where(u => u.UserId == userId).FirstOrDefault();
+
+            return userInRooms;
+        }
+        public List<UserInRoom> getAllUserInRoom(Guid roomId)
+        {
+            var listUser = userInRoomRepository.getUserInRoomList(roomId);
+            
+            return listUser;
+        }
+
+        public void delUserInRoom(Guid roomId, String userId)
+        {
+            var userInRoom = dbContext.UserInRoom.Where(x => x.UserId.Equals(userId) && x.RoomId.Equals(roomId)).FirstOrDefault();
+            userInRoomRepository.delUserInRoom(userInRoom);
+            userInRoomRepository.Save();
+        }
+
+        public void updateUserInRoom(UserInRoom user)
+        {
+            userInRoomRepository.Update(user);
+            userInRoomRepository.Save();
         }
     }
 }

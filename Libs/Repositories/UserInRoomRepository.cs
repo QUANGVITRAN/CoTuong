@@ -35,5 +35,10 @@ namespace Libs.Repositories
         {
             _dbContext.SaveChanges();
         }
+        public void delUserInRoom(UserInRoom userInRoom)
+        {
+            _dbContext.UserInRoom.Remove(userInRoom);
+            _dbContext.SaveChanges();
+        }
     }
 }

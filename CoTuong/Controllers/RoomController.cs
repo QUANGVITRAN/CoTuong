@@ -9,6 +9,9 @@ using System.Security.Principal;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http;
+using System.Collections.Generic;
+using Libs.DTOs;
+using Microsoft.Extensions.Hosting;
 
 namespace CoTuong.Controllers
 {
@@ -21,9 +24,10 @@ namespace CoTuong.Controllers
         private IMemoryCache memoryCache;
         private CacheManege.CacheManage cacheManage;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor; 
+        private IWebHostEnvironment hostEnvironment;
 
-        public RoomController (RoomService roomService, UserInRoomService userInRoomService, 
+        public RoomController(RoomService roomService, UserInRoomService userInRoomService, IWebHostEnvironment hostEnvironment,
             IMemoryCache memoryCache, UserManager<IdentityUser> userManager, IHttpContextAccessor httpContextAccessor)
         {
             this.roomService = roomService;
@@ -32,24 +36,28 @@ namespace CoTuong.Controllers
             this.cacheManage = new CacheManege.CacheManage(memoryCache, userInRoomService, roomService);
             this._userManager = userManager;
             this._httpContextAccessor = httpContextAccessor;
+            this.hostEnvironment = hostEnvironment;
         }
 
         //[Authorize]
         [HttpPost]
         [Route("insertRoom")]
-        public IActionResult insertRoom(string roomName)
+        public IActionResult insertRoom(string roomName, string userId)
         {
             try
             {
+                string chessJson = System.IO.File.ReadAllText(hostEnvironment.ContentRootPath + "\\Data\\ChessJson.txt");
                 var httpContext = _httpContextAccessor.HttpContext;
                 Room room = new Room();
                 room.RoomName = roomName;
                 room.Id = Guid.NewGuid();
+                room.Turn = 0;
+                room.ChessMap = chessJson;
                 roomService.insertRoom(room);
 
                 // thêm user vừa tạo vào phòng
-               
-                string userId = User.FindFirst("Id")?.Value;
+
+              //  string userId = User.FindFirst("Id")?.Value;
 
                 userInRoomService.insertUserInRoom(room.Id, userId);
                 List<IdentityUser> userinroomList = new List<IdentityUser>();
@@ -64,10 +72,10 @@ namespace CoTuong.Controllers
                     userinroomList.Add(_userManager.FindByIdAsync(userId).Result);
                 }
 
-                return Ok(new { status = true, message = room.RoomName });
-                
+                return Ok(new { status = true, message = room.Id });
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Ok(new { status = false, message = ex.Message });
 
@@ -78,9 +86,21 @@ namespace CoTuong.Controllers
         [Route("getAllRoom")]
         public IActionResult getAllRoom()
         {
-            List<Room> roomList = new List<Room>();
-            roomList = roomService.getAll();
-            return Ok(new { status = true, message = roomList });
+            List<Room> roomList = roomService.getAll();
+            List<ResListRoom> resListRooms = new List<ResListRoom>();
+             
+            foreach (Room room in roomList)
+            {
+                ResListRoom resListRoom = new ResListRoom();
+                resListRoom.Id = room.Id;
+                resListRoom.RoomName = room.RoomName;
+
+                resListRoom.SoLuong = roomService.getUserInRoomList(room.Id).Count;
+                resListRooms.Add(resListRoom);
+            }
+
+
+            return Ok(new { status = true, message = resListRooms });
         }
 
         [HttpGet]
@@ -89,14 +109,40 @@ namespace CoTuong.Controllers
         {
             try
             {
-                List<IdentityUser> userinroomList = cacheManage.userInRoom[roomId.ToString()];
+                List<IdentityUser> list = new List<IdentityUser>();
+                if (!cacheManage.userInRoom.ContainsKey(roomId.ToString().ToLower()))
+                {
+                    list = userInRoomService.getUserInRoom(roomId).ToList();
+                    cacheManage.userInRoom.Add(roomId.ToString().ToLower(), list);
+                }
+                else
+                {
+                    list = cacheManage.userInRoom[roomId.ToString()];
+                }
+
+                return Ok(new { status = true, message = list });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { status = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("getUserInRoom")]
+        public IActionResult getUserInRoom(Guid roomId)
+        {
+            try
+            {
+                List<UserInRoom> userinroomList = userInRoomService.getAllUserInRoom(roomId);
                 return Ok(new { status = true, message = userinroomList });
             }
             catch (Exception ex)
             {
                 return Ok(new { status = false, message = ex.Message });
-            }            
+            }
         }
+
 
         [HttpGet]
         [Route("getRoomById")]
@@ -106,9 +152,9 @@ namespace CoTuong.Controllers
             {
                 Room room = roomService.getRoomById(roomId);
                 return Ok(new { status = true, message = room });
-                
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Ok(new { status = false, message = ex.Message });
             }
@@ -124,16 +170,87 @@ namespace CoTuong.Controllers
                 userInRoomService.insertUserInRoom(roomId, userId); // thêm user vào room
 
                 //todo: update list userInRoom trong cache
-                List<IdentityUser> userinroomList = new List<IdentityUser>(); // tạo list user mới
-                if (!cacheManage.userInRoom.ContainsKey(roomId.ToString().ToLower())) // kiểm tra trong cache có list user chưa
-                {                                                                       // nếu chưa
-                    userinroomList = userInRoomService.getUserInRoom(roomId); // lấy list user từ DB
-                    cacheManage.userInRoom.Add(roomId.ToString(), userinroomList); //thêm vòa cache
+                List<IdentityUser> userinroomList = userInRoomService.getUserInRoom(roomId);
+                if (!cacheManage.userInRoom.ContainsKey(roomId.ToString().ToLower()))
+                {
+                    //userinroomList = userInRoomService.getUserInRoom(roomId);
+                    cacheManage.userInRoom.Add(roomId.ToString(), userinroomList);
                 }
-                else
-                {                                                                  // nếu có
-                    userinroomList = cacheManage.userInRoom[roomId.ToString()]; //lấy dữ list user từ cache
-                    userinroomList.Add(_userManager.FindByIdAsync(userId).Result); // thêm  user nào list trong cache
+                //else
+                //{
+                //    cacheManage.userInRoom.Remove(roomId.ToString().ToLower());
+                //    cacheManage.userInRoom.Add(roomId.ToString(), userinroomList);
+
+                //}
+                return Ok(new { status = true, message = "" });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { status = false, message = ex });
+            }
+        }
+        [HttpDelete]
+        [Route("deleteUserToRoom")]
+        public IActionResult deleteUserToRoom(Guid roomId, string userId)
+        {
+            try
+            {
+                
+                var user = userInRoomService.getUserInRoomById(roomId, userId);
+                List<UserInRoom> listUser = userInRoomService.getAllUserInRoom(roomId);
+                if (listUser.Count > 0)
+                {
+
+                    if (user.Role == "ChuPhong")
+                    {
+                        //lấy đối thủ làm chủ phòng
+                        UserInRoom chuPhong = listUser.Where(u => u.Role == "DoiThu").FirstOrDefault();
+                        if (chuPhong != null)
+                        {
+                            chuPhong.Role = "ChuPhong";
+                            userInRoomService.updateUserInRoom(chuPhong);
+                            //update
+                        }
+                        //lấy người đầu tiên trong danh sách làm đối thủ
+                        UserInRoom nguoiXem = listUser.Where(u => u.Role == "NguoiXem").FirstOrDefault();
+                        if (nguoiXem != null)
+                        {
+                            nguoiXem.Role = "DoiThu";
+                            //update
+                            userInRoomService.updateUserInRoom(nguoiXem);
+                        }
+                    }
+                    else if (user.Role == "DoiThu")
+                    {
+                        //lấy người đầu tiên trong danh sách làm đối thủ
+                        UserInRoom nguoiXem = listUser.Where(u => u.Role == "NguoiXem").FirstOrDefault();
+                        if (nguoiXem != null)
+                        {
+                            nguoiXem.Role = "DoiThu";
+                            //update
+                            userInRoomService.updateUserInRoom(nguoiXem);
+                        }
+                    }
+                }
+                userInRoomService.delUserInRoom(roomId, userId);
+                //todo: update list userInRoom trong cache
+                List<IdentityUser> userinroomList = new List<IdentityUser>(); // tạo list user mới
+                if (cacheManage.userInRoom.ContainsKey(roomId.ToString().ToLower()))
+                {
+                    userinroomList = userInRoomService.getUserInRoom(roomId);
+
+
+                    if (userinroomList.Count == 0)
+                    {
+                        //    cacheManage.userInRoom.Remove(roomId.ToString().ToLower());
+                        roomService.DeleteRoom(roomId);
+                    }
+                    else
+                    {
+                        //   cacheManage.userInRoom.Remove(roomId.ToString().ToLower());
+                        //  cacheManage.userInRoom.Add(roomId.ToString(), userinroomList);
+                    }
+
                 }
                 return Ok(new { status = true, message = "" });
             }
@@ -154,7 +271,7 @@ namespace CoTuong.Controllers
                     cacheManage.userInRoom.Remove(roomId.ToString().ToLower());
                 return Ok(new { status = true, message = "Xoa Room thanh cong" });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Ok(new { status = false, message = ex.Message });
             }

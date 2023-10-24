@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Options;
+using CoTuong.Hubs;
+
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -63,7 +64,17 @@ builder.Services.AddSwaggerGen(options =>
         
     });
 });
-
+builder.Services.AddSignalR();
+builder.Services.AddCors(op =>
+{
+    op.AddDefaultPolicy(b =>
+    {
+        b.WithOrigins("http://localhost:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+    });
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -97,5 +108,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
+app.MapHub<ChatHub>("/chatHub");
+app.UseCors();
 app.Run();
