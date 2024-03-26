@@ -10,5 +10,7 @@ namespace Libs.Entity
     {
         public Guid Id { get; set; }
         public string RoomName { get; set; }
+        public int Turn { get; set; }
+        public string ChessMap { get; set; }
     }
 }

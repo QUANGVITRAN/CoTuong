@@ -1,0 +1,37 @@
+﻿[
+	{"id": "xedo1", "src":"xedo1", "top":61, "left":106, "visible": "inline"},
+	{"id": "mado1", "src":"mado1", "top":61, "left":180, "visible": "inline"},
+	{"id": "tuongdo1", "src":"tuongdo1", "top":61, "left":254, "visible": "inline"},
+	{"id": "sido1", "src":"sido1", "top":61, "left":328, "visible": "inline"},
+	{"id": "vuado", "src":"vuado", "top":61, "left":402, "visible": "inline"},
+	{"id": "sido2", "src":"sido1", "top":61, "left":476, "visible": "inline"},
+	{"id": "tuongdo2", "src":"tuongdo1", "top":61, "left":550, "visible": "inline"},
+	{"id": "mado2", "src":"mado1", "top":61, "left":624, "visible": "inline"},
+	{"id": "xedo2", "src":"xedo2", "top":61, "left":698, "visible": "inline"},
+	{"id": "phaodo1", "src":"phaodo1", "top":209, "left":180, "visible": "inline"},
+	{"id": "phaodo2", "src":"phaodo2", "top":209, "left":624, "visible": "inline"},
+
+	{"id": "totdo1", "src":"totdo1", "top":283, "left":106, "visible": "inline"},
+	{"id": "totdo2", "src":"totdo2", "top":283, "left":254, "visible": "inline"},
+	{"id": "totdo3", "src":"totdo3", "top":283, "left":402, "visible": "inline"},
+	{"id": "totdo4", "src":"totdo4", "top":283, "left":550, "visible": "inline"},
+	{"id": "totdo5", "src":"totdo5", "top":283, "left":698, "visible": "inline"},
+
+	{"id": "totden1", "src":"totden1", "top":505, "left":106, "visible": "inline"},
+	{"id": "totden2", "src":"totden2", "top":505, "left":254, "visible": "inline"},
+	{"id": "totden3", "src":"totden3", "top":505, "left":402, "visible": "inline"},
+	{"id": "totden4", "src":"totden4", "top":505, "left":550, "visible": "inline"},
+	{"id": "totden5", "src":"totden5", "top":505, "left":698, "visible": "inline"},	
+	{"id": "phaoden1", "src":"phaoden1", "top":579, "left":180, "visible": "inline"},
+	{"id": "phaoden2", "src":"phaoden2", "top":579, "left":624, "visible": "inline"},
+	{"id": "xeden1", "src":"xeden1", "top":727, "left":106, "visible": "inline"},
+	{"id": "xeden2", "src":"xeden2", "top":727, "left":698, "visible": "inline"},
+	{"id": "maden1", "src":"maden1", "top":727, "left":180, "visible": "inline"},
+	{"id": "maden2", "src":"maden2", "top":727, "left":624, "visible": "inline"},
+	{"id": "tuongden1", "src":"tuongden1", "top":727, "left":254, "visible": "inline"},
+	{"id": "tuongden2", "src":"tuongden2", "top":727, "left":550, "visible": "inline"},
+	{"id": "siden1", "src":"siden1", "top":727, "left":328, "visible": "inline"},
+	{"id": "siden2", "src":"siden2", "top":727, "left":476, "visible": "inline"},
+	{"id": "vuaden", "src":"vuaden", "top":727, "left":402, "visible": "inline"}
+	
+]

@@ -46,7 +46,16 @@ namespace Libs.Repositories
             Room room = _dbContext.Room.Find(id);
             if (room != null)
                 return room;
-            throw new NotImplementedException();
+            throw new Exception("RoomId not found in Room!");
+        }
+
+        public void DeleteRoom(Room room)
+        {
+            _dbContext.Room.Remove(room);
+        }
+        public List<Room> SearchByName(string roomName)
+        {
+            return _dbContext.Room.Where(r => r.RoomName.Contains(roomName)).ToList();
         }
     }
 }

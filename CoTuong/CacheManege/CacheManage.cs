@@ -22,8 +22,8 @@ namespace CoTuong.CacheManege
             get
             {
                 Dictionary<string, List<IdentityUser>> result = (Dictionary<string, List<IdentityUser>>)_memoryCache.Get("memoryCache");
-                if(result == null )
-                {
+                //if(result == null )
+                //{
                     result = new Dictionary<string, List<IdentityUser>>();
                     List<Room> rooms = _roomService.getAll();
                     foreach(Room room in rooms)
@@ -35,7 +35,7 @@ namespace CoTuong.CacheManege
                         }                    
                     }
                     _memoryCache.Set("memoryCache", result);
-                }   
+               // }   
                 return result;
             }
         }
