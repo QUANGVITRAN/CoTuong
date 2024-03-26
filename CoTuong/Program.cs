@@ -22,10 +22,13 @@ var tokenValidationParameter = new TokenValidationParameters()
 {
     ValidateIssuerSigningKey = true,
     IssuerSigningKey = new SymmetricSecurityKey(key),
-    ValidateIssuer = false,
-    ValidateAudience = false,
+    ValidateIssuer = true,
+    ValidateAudience = true,
+    ValidAudience = builder.Configuration["JwtConfig:ValidAudience"],
+    ValidIssuer = builder.Configuration["JwtConfig:ValidIssuer"],
     RequireExpirationTime = false,
-    ValidateLifetime = true
+    ValidateLifetime = true,
+    ClockSkew = TimeSpan.Zero
 };
 builder.Services.AddAuthentication(options =>
 {
@@ -61,7 +64,7 @@ builder.Services.AddSwaggerGen(options =>
             Name = "Source",
             Url = new Uri("https://github.com/QUANGVITRAN/CoTuong")
         },
-        
+
     });
 });
 builder.Services.AddSignalR();

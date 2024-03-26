@@ -24,9 +24,9 @@ namespace Libs.Services
         {
             await tokenRepository.SaveTokenAsync();
         }
-        public void UpdateToken(RefreshToken token)
+        public async Task UpdateToken(RefreshToken token)
         {
-            tokenRepository.UpdateToken(token);
+            await tokenRepository.UpdateTokenAsync(token);
         }
         public async Task<RefreshToken> StoredToken(TokenRequest tokenRequest)
         {

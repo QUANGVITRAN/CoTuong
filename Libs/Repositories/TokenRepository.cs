@@ -14,7 +14,7 @@ namespace Libs.Repositories
     {
         Task AddTokenAsync(RefreshToken token);
         Task SaveTokenAsync();
-        void UpdateToken(RefreshToken token);
+        Task UpdateTokenAsync(RefreshToken token);
         Task<RefreshToken> StoredToken(TokenRequest tokenRequest);
     }
     public class TokenRepository : RepositoryBase<RefreshToken>, ITokenRepository
@@ -31,10 +31,12 @@ namespace Libs.Repositories
         {
             await _dbContext.SaveChangesAsync();
         }
-        public void UpdateToken(RefreshToken token)
+        public async Task UpdateTokenAsync(RefreshToken token)
         {
             _dbContext.RefreshTokens.Update(token);
+            await _dbContext.SaveChangesAsync();
         }
+
         public async Task<RefreshToken> StoredToken(TokenRequest tokenRequest)
         {
             return await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == tokenRequest.RefreshToken);

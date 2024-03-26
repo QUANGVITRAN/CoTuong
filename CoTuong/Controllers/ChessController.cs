@@ -68,6 +68,7 @@ namespace CoTuong.Controllers
             Room room = roomService.getRoomById(chess.roomId);
             string chessJson = room.ChessMap;
             List<ChessNode> chessNodeList = JsonSerializer.Deserialize<List<ChessNode>>(chessJson);
+            room.Turn = chess.turn;
             foreach (var moveChess in moveNodeList)
             {
                 var chessNode = chessNodeList.FirstOrDefault(node => node.id == moveChess.id);
@@ -80,14 +81,18 @@ namespace CoTuong.Controllers
                 if(chessNode.top == 0)
                 {
                     chessNode.visible = "none";
+                    if(chessNode.id=="vuaden" || chessNode.id == "vuado")
+                    {
+                        room.Turn = 2;
+                    }
                 }
             }
             string updatedChessJson = JsonSerializer.Serialize(chessNodeList);
             room.ChessMap = updatedChessJson;
-            room.Turn = chess.turn;
+            
             roomService.update(room);
 
-            hubContext.Clients.All.SendAsync("ReceiveChessMove", JsonSerializer.Serialize(moveNodeList));
+            hubContext.Clients.All.SendAsync("move"+room.Id.ToString(), JsonSerializer.Serialize(moveNodeList));
             return Ok(new { status = true, message = "" });
         }
 
